@@ -2,4 +2,6 @@ images_*/
 .venv_triangle/
 lib/
 lib64/
+bin/
+lib64
 
