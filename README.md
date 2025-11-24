@@ -3,10 +3,12 @@
 This project reconstructs an image using **evolutionary algorithms** and **semi-transparent polygons**.  
 A population of polygons (“DNA”) evolves toward the target image over many iterations.  
 Each iteration mutates the DNA, renders it, evaluates similarity on the GPU, and keeps only improvements.
+As this was written for the use with a website, where the same 200 triangles are used to shift between the shapes, we
+mainly focus on the triangles, with a fixed number of polygons. Hovewer, the code allows for polygons, and allows for 
+removing or adding of the polygons. 
 
 The result is a stylized, generative reconstruction of your input.
 
-Gif Example: 
 <p align="center">
   <img src="gifs/images_trophy_shapes_200_50000.gif" width="400">
 </p>
@@ -65,13 +67,7 @@ pip install pillow numpy opencv-python torch matplotlib
 
 ## Usage
 
-Place your source image in the project root:
-
-```
-nejc_shapes.png
-```
-
-Run the evolutionary painter:
+Place your source image in the project root, then run the evolutionary painter:
 
 ```
 python evolve_gpu.py
@@ -135,7 +131,7 @@ This preserves:
 - position  
 - transparency  
 
-Nothing is lost — you can fully rebuild or transform the art later.
+Nothing is lost — you can fully rebuild or transform the art later. Can be used in combination with framer-motion. 
 
 ---
 
