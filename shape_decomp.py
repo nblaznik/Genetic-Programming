@@ -12,12 +12,12 @@ import time
 
 # SOURCE = "uni_school_shapes.png"
 # SOURCE = "nejc_shapes_nobg.png"
-SOURCE = "skills_shapes.png"
+SOURCE = "source_images/skills_shapes.png"
 
 NUM_CANDIDATES = 10        # mutants per generation
 MAX_POLYGONS = 200         # upper limit
 INITIAL_POLYGONS = 200     # starting polygon count
-ITERATIONS = 50000         # how long to run
+ITERATIONS = 20000         # how long to run
 SAVE_INTERVAL = 200        # save snapshot every N steps
 
 SAVE_DIR = f"images_{SOURCE[:-4]}_{INITIAL_POLYGONS}_{ITERATIONS}"
@@ -142,14 +142,14 @@ def mutate_polygon(poly, W, H):
 def mutate_dna(dna, W, H):
     new = [p.copy() for p in dna]
 
-    # deletion
-    if len(new) > 5 and random.random() < 0.05:
-        idx = random.randrange(len(new))
-        new.pop(idx)
+    # # deletion
+    # if len(new) > 5 and random.random() < 0.05:
+    #     idx = random.randrange(len(new))
+    #     new.pop(idx)
 
-    # addition
-    if len(new) < MAX_POLYGONS and random.random() < 0.10:
-        new.append(random_polygon(W, H))
+    # # addition
+    # if len(new) < MAX_POLYGONS and random.random() < 0.10:
+    #     new.append(random_polygon(W, H))
 
     # mutate one polygon
     idx = random.randrange(len(new))
@@ -233,6 +233,9 @@ def evolve():
             f"polygons={len(dna)}"
         )
         all_best_fits.append(best_fit)
+
+        # if interrupted, save the dna
+
 
         if step % SAVE_INTERVAL == 0:
             best_img.save(os.path.join(SAVE_DIR, f"step_{step:06d}.png"))
