@@ -10,17 +10,20 @@ import time
 # Config
 # ----------------------------------------------------------
 
-# SOURCE = "uni_school_shapes.png"
-# SOURCE = "nejc_shapes_nobg.png"
-SOURCE = "source_images/skills_shapes.png"
 
-NUM_CANDIDATES = 10        # mutants per generation
+NAME = "nejc_shapes_nobg.png"
+# NAME = "uni_school_shapes.png"
+# NAME = "skills_shapes.png"
+
+SOURCE = "source_images/" + NAME
+
+NUM_CANDIDATES = 12        # mutants per generation
 MAX_POLYGONS = 200         # upper limit
 INITIAL_POLYGONS = 200     # starting polygon count
-ITERATIONS = 20000         # how long to run
+ITERATIONS = 50000         # how long to run
 SAVE_INTERVAL = 200        # save snapshot every N steps
 
-SAVE_DIR = f"images_{SOURCE[:-4]}_{INITIAL_POLYGONS}_{ITERATIONS}"
+SAVE_DIR = f"images_{NAME[:-4]}_{INITIAL_POLYGONS}_{ITERATIONS}"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 

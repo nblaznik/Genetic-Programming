@@ -6,6 +6,10 @@ Each iteration mutates the DNA, renders it, evaluates similarity on the GPU, and
 
 The result is a stylized, generative reconstruction of your input.
 
+Gif Example: 
+<p align="center">
+  <img src="gifs/images_trophy_shapes_200_50000.gif" width="400">
+</p>
 ---
 
 ## Features
