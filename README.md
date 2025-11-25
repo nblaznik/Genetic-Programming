@@ -10,8 +10,8 @@ removing or adding of the polygons.
 The result is a stylized, generative reconstruction of your input.
 
 <p align="center">
-  <img src="gifs/images_trophy_shapes_200_50000.gif" height="900">
-  <img src="gifs/images_portrait_nejc_600_50000.gif" height="900">
+  <img src="gifs/images_trophy_shapes_200_50000.gif" height="400">
+  <img src="gifs/images_portrait_nejc_600_50000.gif" height="400">
 </p>
 ---
 
