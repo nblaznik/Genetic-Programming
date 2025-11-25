@@ -71,7 +71,7 @@ pip install pillow numpy opencv-python torch matplotlib
 Place your source image in the project root, then run the evolutionary painter:
 
 ```
-python evolve_gpu.py
+python shape_decomp.py
 ```
 
 Output files will appear in:
