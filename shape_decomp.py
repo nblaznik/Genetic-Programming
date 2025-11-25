@@ -11,15 +11,17 @@ import time
 # ----------------------------------------------------------
 
 
-NAME = "nejc_shapes_nobg.png"
+NAME = "portrait_nejc.jpg"
+# NAME = "loader.png"
+# NAME = "nejc_shapes_nobg.png"
 # NAME = "uni_school_shapes.png"
 # NAME = "skills_shapes.png"
 
 SOURCE = "source_images/" + NAME
 
-NUM_CANDIDATES = 12        # mutants per generation
-MAX_POLYGONS = 200         # upper limit
-INITIAL_POLYGONS = 200     # starting polygon count
+NUM_CANDIDATES =   3        # mutants per generation
+MAX_POLYGONS = 800         # upper limit
+INITIAL_POLYGONS = 600     # starting polygon count
 ITERATIONS = 50000         # how long to run
 SAVE_INTERVAL = 200        # save snapshot every N steps
 
@@ -84,9 +86,12 @@ def fitness_torch(target_t, canvas_t, edge_weight_t):
 # ----------------------------------------------------------
 # DNA: polygons
 # ----------------------------------------------------------
+def random_polygon(W, H, poly=False):
+    if poly:
+        n = random.choice([3, 4, 5, 6])
+    else:   
+        n = 3 # triangles only
 
-def random_polygon(W, H):
-    n = 3 #random.choice([3, 4, 5, 6])
     cx = random.randint(0, W - 1)
     cy = random.randint(0, H - 1)
 
@@ -100,16 +105,18 @@ def random_polygon(W, H):
         y = max(0, min(H - 1, y))
         pts.append((x, y))
 
-    # color = (
-    #     random.randint(0, 255),
-    #     random.randint(0, 255),
-    #     random.randint(0, 255),
-    #     random.randint(30, 160)
-    # )
-
+    # if initialize random color as well 
+    # The color still changes during mutation
     color = (
-        105, 67, 21, random.randint(50, 255)
+        random.randint(0, 255),
+        random.randint(0, 255),
+        random.randint(0, 255),
+        random.randint(30, 160)
     )
+
+    # color = (
+    #     105, 67, 21, random.randint(50, 255) # random alpha 
+    # )
 
     return {"points": pts, "color": color}
 
@@ -145,14 +152,14 @@ def mutate_polygon(poly, W, H):
 def mutate_dna(dna, W, H):
     new = [p.copy() for p in dna]
 
-    # # deletion
-    # if len(new) > 5 and random.random() < 0.05:
-    #     idx = random.randrange(len(new))
-    #     new.pop(idx)
+    # deletion
+    if len(new) > 5 and random.random() < 0.05:
+        idx = random.randrange(len(new))
+        new.pop(idx)
 
-    # # addition
-    # if len(new) < MAX_POLYGONS and random.random() < 0.10:
-    #     new.append(random_polygon(W, H))
+    # addition
+    if len(new) < MAX_POLYGONS and random.random() < 0.10: # more likely to add 
+        new.append(random_polygon(W, H))
 
     # mutate one polygon
     idx = random.randrange(len(new))
@@ -206,42 +213,55 @@ def evolve():
     print("Initial fitness:", best_fit, "polygons:", len(dna))
     all_best_fits = []
 
-    ## Probably best to evaluate based on the difference in the quality of the fit (to do)
-    for step in range(ITERATIONS):
-        # propose mutants
-        best_local_fit = float("inf")   
-        best_local_dna = None
-        best_local_img = None
-        best_local_t = None
 
-        for _ in range(NUM_CANDIDATES):
-            mutant = mutate_dna(dna, W, H)
-            f_val, img, img_t = evaluate_dna(mutant, size, target_t, edge_weight_t)
+    try: 
+        ## Probably best to evaluate based on the difference in the quality of the fit (to do)
+        for step in range(ITERATIONS):
+            # propose mutants
+            best_local_fit = float("inf")   
+            best_local_dna = None
+            best_local_img = None
+            best_local_t = None
 
-            if f_val < best_local_fit:
-                best_local_fit = f_val
-                best_local_dna = mutant
-                best_local_img = img
-                best_local_t = img_t
+            for _ in range(NUM_CANDIDATES):
+                mutant = mutate_dna(dna, W, H)
+                f_val, img, img_t = evaluate_dna(mutant, size, target_t, edge_weight_t)
 
-        # accept if better than global best
-        if best_local_fit < best_fit:
-            dna = best_local_dna
-            best_img = best_local_img
-            best_t = best_local_t
-            best_fit = best_local_fit
+                if f_val < best_local_fit:
+                    best_local_fit = f_val
+                    best_local_dna = mutant
+                    best_local_img = img
+                    best_local_t = img_t
 
-        print(
-            f"Step {step}: improved -> {best_fit:.3f}, "
-            f"polygons={len(dna)}"
-        )
-        all_best_fits.append(best_fit)
+            # accept if better than global best
+            if best_local_fit < best_fit:
+                dna = best_local_dna
+                best_img = best_local_img
+                best_t = best_local_t
+                best_fit = best_local_fit
 
-        # if interrupted, save the dna
+            print(
+                f"{NAME} - ",
+                f"Step {step}: improved -> {best_fit:.3f}, "
+                f"polygons={len(dna)}"
+            )
+            all_best_fits.append(best_fit)
+
+            # if interrupted, save the dna
 
 
-        if step % SAVE_INTERVAL == 0:
-            best_img.save(os.path.join(SAVE_DIR, f"step_{step:06d}.png"))
+            if step % SAVE_INTERVAL == 0:
+                best_img.save(os.path.join(SAVE_DIR, f"step_{step:06d}.png"))
+
+    except KeyboardInterrupt:
+        print("Interrupted, saving current state...")
+
+        # save everything you have right now
+        save_dna(dna, f"{SAVE_DIR}/interrupt_final_dna.json")
+        best_img.save(f"{SAVE_DIR}/interrupt_final.png")
+        np.save(f"{SAVE_DIR}/interrupt_all_best_fits.npy", np.array(all_best_fits))
+
+        return
 
     # best_img.save(os.path.join(SAVE_DIR, "final.png"))
     save_dna(dna, f"{SAVE_DIR}/final_dna.json")
